@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.List;
 
 public class ScheduleCommand extends ListenerAdapter {
@@ -34,7 +35,7 @@ public class ScheduleCommand extends ListenerAdapter {
                 try {
                     Stream stream = new Stream(title, game, startingTime, duration, date, isReccurent);
                     Core.streamManager.pushStream(stream);
-                } catch (GameNotFoundException | SQLException e) {
+                } catch (GameNotFoundException | SQLException | ParseException e) {
                     e.printStackTrace();
                     event.reply(e.getMessage()).queue();
                 }

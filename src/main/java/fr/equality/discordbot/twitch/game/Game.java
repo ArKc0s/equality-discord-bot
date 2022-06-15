@@ -16,7 +16,7 @@ public class Game {
         GameList gameList = Core.twitchClient.getHelix().getGames(Core.authToken, null, List.of(name)).execute();
 
         if(gameList.getGames().size() == 1) {
-            this.identifier = Integer.valueOf(gameList.getGames().get(0).getId());
+            this.identifier = Integer.parseInt(gameList.getGames().get(0).getId());
             this.name = gameList.getGames().get(0).getName();
             this.thumbnailUrl = gameList.getGames().get(0).getBoxArtUrl();
         } else if(gameList.getGames().size() == 0) {

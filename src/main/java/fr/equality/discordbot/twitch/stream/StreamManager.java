@@ -24,18 +24,18 @@ public class StreamManager {
 
     public void pushStream(Stream stream) throws SQLException {
 
-        String insert = "INSERT INTO streams VALUES (default,?,?,?,?,?,?)";
+        String insert = "INSERT INTO streams VALUES (default,?,?,?,?,?)";
         PreparedStatement insertStream = connection.prepareStatement(insert);
 
 
         insertStream.setString(1, stream.getTitle());
         insertStream.setString(2, stream.getGame().getName());
-        insertStream.setString(3, stream.getStartingTime());
-        insertStream.setString(4, stream.getDuration());
-        insertStream.setString(5, stream.getDate());
-        insertStream.setBoolean(6, stream.isReccurent());
+        insertStream.setString(3, stream.getDuration());
+        insertStream.setTimestamp(4, new Timestamp(stream.getDate().getTime()));
+        insertStream.setBoolean(5, stream.isReccurent());
 
         insertStream.executeUpdate();
+        insertStream.close();
     }
 
     public int getLastID(){
