@@ -72,6 +72,7 @@ public class Core {
 
         /* ---------- Creating Discord Bot Command ---------- */
         commandManager.createCommands();
+        jdaClient.addEventListener(new ScheduleCommand());
         /* -------------------------------------------------- */
 
     }
@@ -86,7 +87,6 @@ public class Core {
 
         jdaClient = JDABuilder.createDefault(BOT_TOKEN)
                 .setActivity(Activity.playing("se faire développer par ArKc0s"))
-                .addEventListeners(new ScheduleCommand())
                 .build().awaitReady();
     }
 

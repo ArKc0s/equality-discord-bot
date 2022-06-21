@@ -22,7 +22,7 @@ public class ScheduleCommand extends ListenerAdapter {
             if(event.getSubcommandName().equals("create")) {
 
                 if(!event.getMember().getRoles().contains(Core.jdaClient.getRoleById(724609045603811438L))) {
-                    event.reply("Permission non accordée !");
+                    event.reply("Permission non accordée !").queue();
                 } else {
 
                     List<OptionMapping> options = event.getOptions();
