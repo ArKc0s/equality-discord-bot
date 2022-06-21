@@ -33,7 +33,8 @@ public class ScheduleCommand extends ListenerAdapter {
                 event.deferReply();
 
                 try {
-                    Stream stream = new Stream(title, game, startingTime, duration, date, isReccurent);
+
+                    Stream stream = new Stream(Core.streamManager.getNextID(), title, game, startingTime, duration, date, isReccurent);
                     Core.streamManager.pushStream(stream);
                 } catch (GameNotFoundException | SQLException | ParseException e) {
                     e.printStackTrace();

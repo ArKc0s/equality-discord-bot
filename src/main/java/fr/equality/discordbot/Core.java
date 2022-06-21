@@ -63,12 +63,14 @@ public class Core {
         DB_USER = dotenv.get("DB_USER");
         DB_PASSWORD = dotenv.get("DB_PASSWORD");
 
-        streamManager.init();
+
 
         twitchClient = TwitchClientBuilder.builder()
                 .withDefaultAuthToken(new OAuth2Credential("twitch", authToken))
                 .withEnableHelix(true)
                 .build();
+
+        streamManager.init(twitchClient);
 
         JDA jda = JDABuilder.createDefault(botToken)
                 .setActivity(Activity.playing("se faire développer par ArKc0s"))
