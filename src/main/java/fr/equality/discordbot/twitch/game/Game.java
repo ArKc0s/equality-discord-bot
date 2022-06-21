@@ -13,7 +13,7 @@ public class Game {
 
     public Game(String name) throws GameNotFoundException {
 
-        GameList gameList = Core.twitchClient.getHelix().getGames(Core.authToken, null, List.of(name)).execute();
+        GameList gameList = Core.twitchClient.getHelix().getGames(Core.AUTH_TOKEN, null, List.of(name)).execute();
 
         if(gameList.getGames().size() == 1) {
             this.identifier = Integer.parseInt(gameList.getGames().get(0).getId());

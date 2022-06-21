@@ -36,7 +36,7 @@ public class StreamManager {
 
         System.out.println(new java.util.Date(stream.getStartDate().getTime()).toInstant());
 
-        StreamScheduleResponse response = client.getHelix().createStreamScheduleSegment(Core.authToken, Core.channelID, new ScheduleSegmentInput(new java.util.Date(stream.getStartDate().getTime()).toInstant() , "Europe/Paris", stream.isReccurent(), false, durationInMinutes, String.valueOf(stream.getGame().getIdentifier()), stream.getTitle())).execute();
+        StreamScheduleResponse response = client.getHelix().createStreamScheduleSegment(Core.AUTH_TOKEN, Core.CHANNEL_ID, new ScheduleSegmentInput(new java.util.Date(stream.getStartDate().getTime()).toInstant() , "Europe/Paris", stream.isRecurring(), false, durationInMinutes, String.valueOf(stream.getGame().getIdentifier()), stream.getTitle())).execute();
         stream.setTwitchID(response.getSchedule().getSegments().get(0).getId());
 
         return stream.getId();
@@ -44,7 +44,7 @@ public class StreamManager {
 
     public void getStreamFromHelix(ArrayList<Stream> streams) throws ParseException, GameNotFoundException {
 
-        List<ScheduledSegment> segments = client.getHelix().getChannelStreamSchedule(Core.authToken, Core.channelID, null, null, "120", null, 25).execute().getSchedule().getSegments();
+        List<ScheduledSegment> segments = client.getHelix().getChannelStreamSchedule(Core.AUTH_TOKEN, Core.CHANNEL_ID, null, null, "120", null, 25).execute().getSchedule().getSegments();
 
         if(segments != null) {
             streams.clear();
@@ -81,11 +81,11 @@ public class StreamManager {
                 .addField("__"+ stream.getTitle() +"__", "sur _" + stream.getGame().getName() +"_", false)
                 .addBlankField(false)
                 .addField("__Date__", stream.getStartDateAsString(), true)
-                .addField("__Horaire__", stream.getStartingTime() + "-" + stream.getEndingTime(), true)
+                .addField("__Horaire__", stream.getStartingTimeAsString() + "-" + stream.getEndingTime(), true)
                 .addBlankField(false)
                 .addField("__Retrouve la programmation ici__", "https://www.twitch.tv/equalitytv/schedule", false);
 
-        Core.guild.getChannelById(TextChannel.class, 724609006018232400L).sendMessageEmbeds(eb.build()).queue();
+        Core.jdaGuild.getChannelById(TextChannel.class, 724609006018232400L).sendMessageEmbeds(eb.build()).queue();
 
     }
 

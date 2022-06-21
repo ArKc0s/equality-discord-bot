@@ -19,10 +19,10 @@ public class Stream {
     private String duration;
     private Date startDate;
     private Date endDate;
-    private boolean isReccurent;
+    private boolean isRecurring;
     private String twitchID;
 
-    public Stream(String title, String gameName, String startingTime, String duration, String date, boolean isReccurent) throws GameNotFoundException, ParseException {
+    public Stream(String title, String gameName, String startingTime, String duration, String date, boolean isRecurring) throws GameNotFoundException, ParseException {
 
         this.id = -1;
         this.title = title;
@@ -33,22 +33,12 @@ public class Stream {
         this.startDate = new Date(format.parse(date + " " + startingTime).getTime());
         this.endDate = new Date(Long.sum(startDate.getTime(), processEndDate()));
 
-        this.isReccurent = isReccurent;
+        this.isRecurring = isRecurring;
     }
 
 
     public int getId() {
         return id;
-    }
-
-    public void setTwitchID(String twitchID) {
-        this.twitchID = twitchID;
-
-        int sum = 0;
-        for(char ch : twitchID.toCharArray()) {
-            sum += ch;
-        }
-        this.id = sum;
     }
 
     public String getTitle() {
@@ -59,7 +49,7 @@ public class Stream {
         return game;
     }
 
-    public String getStartingTime() {
+    public String getStartingTimeAsString() {
         SimpleDateFormat format = new SimpleDateFormat("HH:mm");
         return format.format(startDate);
     }
@@ -81,17 +71,27 @@ public class Stream {
         return endDate;
     }
 
-    public boolean isReccurent() {
-        return isReccurent;
-    }
-
-    public long processEndDate() {
-        String[] separatedDuration = duration.split(":");
-        return (3600000L * Integer.parseInt(separatedDuration[0]) + (1000L * Integer.parseInt(separatedDuration[1])));
+    public boolean isRecurring() {
+        return isRecurring;
     }
 
     public String getEndingTime() {
         SimpleDateFormat format = new SimpleDateFormat("HH:mm");
         return format.format(startDate.getTime() + processEndDate());
+    }
+
+    public void setTwitchID(String twitchID) {
+        this.twitchID = twitchID;
+
+        int sum = 0;
+        for(char ch : twitchID.toCharArray()) {
+            sum += ch;
+        }
+        this.id = sum;
+    }
+
+    public long processEndDate() {
+        String[] separatedDuration = duration.split(":");
+        return (3600000L * Integer.parseInt(separatedDuration[0]) + (1000L * Integer.parseInt(separatedDuration[1])));
     }
 }
