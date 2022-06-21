@@ -89,4 +89,9 @@ public class Stream {
         String[] separatedDuration = duration.split(":");
         return (3600000L * Integer.parseInt(separatedDuration[0]) + (1000L * Integer.parseInt(separatedDuration[1])));
     }
+
+    public String getEndingTime() {
+        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+        return format.format(startDate.getTime() + processEndDate());
+    }
 }

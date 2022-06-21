@@ -4,6 +4,7 @@ import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
 import fr.equality.discordbot.commands.ScheduleCommand;
+import fr.equality.discordbot.twitch.game.Game;
 import fr.equality.discordbot.twitch.game.GameNotFoundException;
 import fr.equality.discordbot.twitch.stream.Stream;
 import fr.equality.discordbot.twitch.stream.StreamManager;
@@ -67,15 +68,15 @@ public class Core {
                 .withEnableHelix(true)
                 .build();
 
-        streamManager = new StreamManager(twitchClient);
-
-
-        JDA jda = JDABuilder.createDefault(botToken)
+        jda = JDABuilder.createDefault(botToken)
                 .setActivity(Activity.playing("se faire développer par ArKc0s"))
                 .addEventListeners(new ScheduleCommand())
                 .build().awaitReady();
 
         guild = jda.getGuildById(guildID);
+
+
+        streamManager = new StreamManager(twitchClient);
 
         guild.upsertCommand("planning", "Test de la commande planning")
                 .addSubcommands(
@@ -97,7 +98,7 @@ public class Core {
 
         List<Command> commands = guild.retrieveCommands().complete();
 
-
+        System.out.println(new Game("League of Legends").getThumbnailUrl());
 
 
 

@@ -21,42 +21,48 @@ public class ScheduleCommand extends ListenerAdapter {
 
             if(event.getSubcommandName().equals("create")) {
 
-                List<OptionMapping> options = event.getOptions();
+                if(!event.getMember().getRoles().contains(Core.jda.getRoleById(724609045603811438L))) {
+                    event.reply("Permission non accordée !");
+                } else {
 
-                final String title = options.get(0).getAsString();
-                final String game = options.get(1).getAsString();
-                final String startingTime = options.get(2).getAsString();
-                final String duration = options.get(3).getAsString();
-                final String date = options.get(4).getAsString();
-                final boolean isReccurent = options.get(5).getAsBoolean();
+                    List<OptionMapping> options = event.getOptions();
 
-                event.deferReply();
+                    final String title = options.get(0).getAsString();
+                    final String game = options.get(1).getAsString();
+                    final String startingTime = options.get(2).getAsString();
+                    final String duration = options.get(3).getAsString();
+                    final String date = options.get(4).getAsString();
+                    final boolean isReccurent = options.get(5).getAsBoolean();
 
-                try {
+                    event.deferReply();
 
-                    Stream stream = new Stream(title, game, startingTime, duration, date, isReccurent);
-                    int identifier = Core.streamManager.addStreamToSchedule(stream);
+                    try {
 
-                    event.reply("Stream ajouté (ID = " + identifier + ")").queue();
+                        Stream stream = new Stream(title, game, startingTime, duration, date, isReccurent);
+                        int identifier = Core.streamManager.addStreamToSchedule(stream);
+                        Core.streamManager.announceStreamCreation(stream);
 
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                Core.streamManager.getStreamFromHelix(Core.streams);
-                            } catch (ParseException | GameNotFoundException e) {
-                                e.printStackTrace();
+                        event.reply("Stream ajouté (ID = " + identifier + ")").queue();
+                        //TODO: Préciser dans le message le titre date et heure du stream
+
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Core.streamManager.getStreamFromHelix(Core.streams);
+                                } catch (ParseException | GameNotFoundException e) {
+                                    e.printStackTrace();
+                                }
                             }
-                        }
-                    }).start();
+                        }).start();
 
 
-                } catch (GameNotFoundException | ParseException e) {
-                    e.printStackTrace();
-                    event.reply("Erreur d'exécution de la commande : " + e.getMessage()).queue();
+                    } catch (GameNotFoundException | ParseException e) {
+                        e.printStackTrace();
+                        event.reply("Erreur d'exécution de la commande : " + e.getMessage()).queue();
+                    }
+
                 }
-
-
 
             }
 
