@@ -20,10 +20,11 @@ public class Stream {
     private Date startDate;
     private Date endDate;
     private boolean isReccurent;
+    private String twitchID;
 
-    public Stream(int id, String title, String gameName, String startingTime, String duration, String date, boolean isReccurent) throws GameNotFoundException, ParseException, SQLException {
+    public Stream(String title, String gameName, String startingTime, String duration, String date, boolean isReccurent) throws GameNotFoundException, ParseException {
 
-        this.id = id;
+        this.id = -1;
         this.title = title;
         this.game = new Game(gameName);
         this.duration = duration;
@@ -40,8 +41,14 @@ public class Stream {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setTwitchID(String twitchID) {
+        this.twitchID = twitchID;
+
+        int sum = 0;
+        for(char ch : twitchID.toCharArray()) {
+            sum += ch;
+        }
+        this.id = sum;
     }
 
     public String getTitle() {

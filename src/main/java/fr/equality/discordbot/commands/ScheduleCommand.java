@@ -34,14 +34,28 @@ public class ScheduleCommand extends ListenerAdapter {
 
                 try {
 
-                    Stream stream = new Stream(Core.streamManager.getNextID(), title, game, startingTime, duration, date, isReccurent);
-                    Core.streamManager.pushStream(stream);
-                } catch (GameNotFoundException | SQLException | ParseException e) {
+                    Stream stream = new Stream(title, game, startingTime, duration, date, isReccurent);
+                    int identifier = Core.streamManager.addStreamToSchedule(stream);
+
+                    event.reply("Stream ajouté (ID = " + identifier + ")").queue();
+
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                Core.streamManager.getStreamFromHelix(Core.streams);
+                            } catch (ParseException | GameNotFoundException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }).start();
+
+
+                } catch (GameNotFoundException | ParseException e) {
                     e.printStackTrace();
-                    event.reply(e.getMessage()).queue();
+                    event.reply("Erreur d'exécution de la commande : " + e.getMessage()).queue();
                 }
 
-                event.reply("OK").queue();
 
 
             }

@@ -4,6 +4,7 @@ import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
 import fr.equality.discordbot.commands.ScheduleCommand;
+import fr.equality.discordbot.twitch.game.GameNotFoundException;
 import fr.equality.discordbot.twitch.stream.Stream;
 import fr.equality.discordbot.twitch.stream.StreamManager;
 import io.github.cdimascio.dotenv.Dotenv;
@@ -17,6 +18,8 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
 import javax.security.auth.login.LoginException;
+import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,11 +46,9 @@ public class Core {
     public static StreamManager streamManager;
 
 
-    public static void main(String[] args) throws LoginException, InterruptedException {
+    public static void main(String[] args) throws LoginException, InterruptedException, SQLException, ParseException, GameNotFoundException {
 
         streams = new ArrayList<>();
-        streamManager = new StreamManager();
-
 
         dotenv = Dotenv.configure()
                 .directory("src/main/resources")
@@ -57,11 +58,7 @@ public class Core {
         channelID = dotenv.get("CHANNEL_ID");
         botToken = dotenv.get("BOT_TOKEN");
         guildID = Long.valueOf(dotenv.get("GUILD_ID"));
-        DB_HOST = dotenv.get("DB_HOST");
-        DB_NAME = dotenv.get("DB_NAME");
-        DB_PORT = dotenv.get("DB_PORT");
-        DB_USER = dotenv.get("DB_USER");
-        DB_PASSWORD = dotenv.get("DB_PASSWORD");
+
 
 
 
@@ -70,7 +67,8 @@ public class Core {
                 .withEnableHelix(true)
                 .build();
 
-        streamManager.init(twitchClient);
+        streamManager = new StreamManager(twitchClient);
+
 
         JDA jda = JDABuilder.createDefault(botToken)
                 .setActivity(Activity.playing("se faire développer par ArKc0s"))
