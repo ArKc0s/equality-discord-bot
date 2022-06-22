@@ -45,7 +45,7 @@ public class Core {
     public static CommandManager commandManager;
 
 
-    public static void main(String[] args) throws LoginException, InterruptedException {
+    public static void main(String[] args) throws LoginException, InterruptedException, ParseException, GameNotFoundException {
 
         /* ------ Environment Variables Initialization ------ */
         dotenv = Dotenv.configure()
@@ -74,6 +74,9 @@ public class Core {
         commandManager.createCommands();
         jdaClient.addEventListener(new ScheduleCommand());
         /* -------------------------------------------------- */
+
+        streamManager.getStreamsFromSchedule(streams);
+        System.out.println(streams);
 
     }
 

@@ -9,6 +9,10 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 
 
 public class Stream {
@@ -17,25 +21,44 @@ public class Stream {
     private String title;
     private Game game;
     private String duration;
-    private Date startDate;
-    private Date endDate;
+    private Instant startInstant;
+    private Instant endInstant;
     private boolean isRecurring;
     private String twitchID;
 
-    public Stream(String title, String gameName, String startingTime, String duration, String date, boolean isRecurring) throws GameNotFoundException, ParseException {
+    public Stream(String title, String gameName, String startingTime, String duration, String date, boolean isRecurring)
+            throws GameNotFoundException, ParseException {
 
         this.id = -1;
+        this.twitchID = "";
         this.title = title;
         this.game = new Game(gameName);
         this.duration = duration;
 
-        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-        this.startDate = new Date(format.parse(date + " " + startingTime).getTime());
-        this.endDate = new Date(Long.sum(startDate.getTime(), processEndDate()));
+        DateTimeFormatter formatter = new DateTimeFormatterBuilder()
+                .appendPattern("dd/MM/yyyy HH:mm")
+                .toFormatter()
+                .withZone(ZoneId.of("Europe/Paris"));
+
+        this.startInstant = formatter.parse(date + " " + startingTime, Instant::from);
+
+        this.endInstant = startInstant;
+        this.endInstant = this.endInstant.plusMillis(getDurationInMillis());
 
         this.isRecurring = isRecurring;
     }
 
+    public Stream(String twitchID, String title, String gameName, String duration, Instant startInstant,
+                  Instant endInstant, boolean isRecurring) throws GameNotFoundException {
+        this.id = calcID(twitchID);
+        this.twitchID = twitchID;
+        this.title = title;
+        this.game = new Game(gameName);
+        this.duration = duration;
+        this.startInstant = startInstant;
+        this.endInstant = endInstant;
+        this.isRecurring = isRecurring;
+    }
 
     public int getId() {
         return id;
@@ -49,49 +72,90 @@ public class Stream {
         return game;
     }
 
-    public String getStartingTimeAsString() {
-        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
-        return format.format(startDate);
-    }
-
     public String getDuration() {
         return duration;
-    }
-
-    public Date getStartDate() {
-        return startDate;
-    }
-
-    public String getStartDateAsString() {
-        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-        return format.format(startDate);
-    }
-
-    public Date getEndDate() {
-        return endDate;
     }
 
     public boolean isRecurring() {
         return isRecurring;
     }
 
-    public String getEndingTime() {
-        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
-        return format.format(startDate.getTime() + processEndDate());
+    public Instant getStartInstant() {
+        return startInstant;
     }
 
-    public void setTwitchID(String twitchID) {
-        this.twitchID = twitchID;
+    public String getStartingTimeAsString() {
+        DateTimeFormatter formatter = new DateTimeFormatterBuilder()
+                .appendPattern("HH:mm")
+                .toFormatter()
+                .withZone(ZoneId.of("Europe/Paris"));
 
-        int sum = 0;
-        for(char ch : twitchID.toCharArray()) {
-            sum += ch;
-        }
-        this.id = sum;
+        return formatter.format(startInstant);
     }
 
-    public long processEndDate() {
+    public String getStartDateAsString() {
+        DateTimeFormatter formatter = new DateTimeFormatterBuilder()
+                .appendPattern("dd/MM/yyyy")
+                .toFormatter()
+                .withZone(ZoneId.of("Europe/Paris"));
+
+        return formatter.format(startInstant);
+    }
+
+    public Instant getEndInstant() {
+        return endInstant;
+    }
+
+    public String getEndingTimeAsString() {
+        DateTimeFormatter formatter = new DateTimeFormatterBuilder()
+                .appendPattern("HH:mm")
+                .toFormatter()
+                .withZone(ZoneId.of("Europe/Paris"));
+
+        return formatter.format(endInstant);
+    }
+
+    public String getEndingDateAsString() {
+        DateTimeFormatter formatter = new DateTimeFormatterBuilder()
+                .appendPattern("dd/MM/yyyy")
+                .toFormatter()
+                .withZone(ZoneId.of("Europe/Paris"));
+
+        return formatter.format(endInstant);
+    }
+
+    public long getDurationInMillis() {
         String[] separatedDuration = duration.split(":");
-        return (3600000L * Integer.parseInt(separatedDuration[0]) + (1000L * Integer.parseInt(separatedDuration[1])));
+        return (3600000L * Integer.parseInt(separatedDuration[0]) + (60000L * Integer.parseInt(separatedDuration[1])));
+    }
+
+    public int getDurationInMinutes() {
+        String[] separatedDuration = duration.split(":");
+        return Integer.parseInt(separatedDuration[0]) * 60 + Integer.parseInt(separatedDuration[1]);
+    }
+
+    public void setIDs(String twitchID) {
+        this.twitchID = twitchID;
+        this.id = calcID(twitchID);
+    }
+
+    public int calcID(String twitchID) {
+        int sum = 0;
+        for(char ch : twitchID.toCharArray()) sum += ch;
+        return sum;
+    }
+
+    @Override
+    public String toString() {
+        return "Stream{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", game=" + game +
+                ", duration='" + duration + '\'' +
+                ", startInstant=" + startInstant +
+                ", endInstant=" + endInstant +
+                ", isRecurring=" + isRecurring +
+                ", twitchID='" + twitchID + '\'' +
+                '}';
     }
 }

@@ -49,7 +49,7 @@ public class ScheduleCommand extends ListenerAdapter {
                             @Override
                             public void run() {
                                 try {
-                                    Core.streamManager.getStreamFromHelix(Core.streams);
+                                    Core.streamManager.getStreamsFromSchedule(Core.streams);
                                 } catch (ParseException | GameNotFoundException e) {
                                     e.printStackTrace();
                                 }
@@ -60,6 +60,7 @@ public class ScheduleCommand extends ListenerAdapter {
                     } catch (GameNotFoundException | ParseException e) {
                         e.printStackTrace();
                         event.reply("Erreur d'exécution de la commande : " + e.getMessage()).queue();
+                        //TODO: Handle Helix Errors "HystrixRuntimeException"
                     }
 
                 }
