@@ -150,7 +150,7 @@ public class Stream {
         return "Stream{" +
                 "id=" + id +
                 ", title='" + title + '\'' +
-                ", game=" + game +
+                ", game=" + game.getName() +
                 ", duration='" + duration + '\'' +
                 ", startInstant=" + startInstant +
                 ", endInstant=" + endInstant +

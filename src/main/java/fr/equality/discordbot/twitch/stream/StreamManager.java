@@ -8,6 +8,7 @@ import fr.equality.discordbot.Core;
 import fr.equality.discordbot.twitch.game.GameNotFoundException;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.TextChannel;
+import org.apache.commons.lang.time.DurationFormatUtils;
 
 import java.awt.*;
 import java.text.ParseException;
@@ -44,9 +45,10 @@ public class StreamManager {
 
         for(ScheduledSegment segment : segments) {
 
-            String duration = Duration.between(segment.getStartTime(), segment.getEndTime()).toString();
+            Duration duration = Duration.between(segment.getStartTime(), segment.getEndTime());
+            String durationString = DurationFormatUtils.formatDuration(duration.toMillis(), "HH:mm");
 
-            streams.add(new Stream(segment.getId(), segment.getTitle(), segment.getCategory().getName(), duration,
+            streams.add(new Stream(segment.getId(), segment.getTitle(), segment.getCategory().getName(), durationString,
                     segment.getStartTime(), segment.getEndTime(), segment.isRecurring()));
         }
     }

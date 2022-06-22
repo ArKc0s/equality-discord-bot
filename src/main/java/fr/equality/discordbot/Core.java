@@ -76,7 +76,11 @@ public class Core {
         /* -------------------------------------------------- */
 
         streamManager.getStreamsFromSchedule(streams);
-        System.out.println(streams);
+
+        for(Stream s : streams) {
+            System.out.println(s.toString());
+            System.out.println(" ");
+        }
 
     }
 
