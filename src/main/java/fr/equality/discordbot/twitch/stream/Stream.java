@@ -1,14 +1,9 @@
 package fr.equality.discordbot.twitch.stream;
 
-import fr.equality.discordbot.Core;
 import fr.equality.discordbot.twitch.game.Game;
-import fr.equality.discordbot.twitch.game.GameNotFoundException;
+import fr.equality.discordbot.exceptions.GameNotFoundException;
 
-import java.sql.Date;
-import java.sql.SQLException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -74,6 +69,10 @@ public class Stream {
 
     public String getDuration() {
         return duration;
+    }
+
+    public String getTwitchID() {
+        return twitchID;
     }
 
     public boolean isRecurring() {

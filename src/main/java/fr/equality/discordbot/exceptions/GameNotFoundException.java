@@ -1,4 +1,4 @@
-package fr.equality.discordbot.twitch.game;
+package fr.equality.discordbot.exceptions;
 
 public class GameNotFoundException extends Throwable {
 

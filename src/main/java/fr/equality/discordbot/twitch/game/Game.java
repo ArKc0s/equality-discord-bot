@@ -2,6 +2,7 @@ package fr.equality.discordbot.twitch.game;
 
 import com.github.twitch4j.helix.domain.GameList;
 import fr.equality.discordbot.Core;
+import fr.equality.discordbot.exceptions.GameNotFoundException;
 
 import java.util.List;
 

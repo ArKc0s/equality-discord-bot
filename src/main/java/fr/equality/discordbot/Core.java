@@ -5,8 +5,7 @@ import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
 import fr.equality.discordbot.commands.CommandManager;
 import fr.equality.discordbot.commands.ScheduleCommand;
-import fr.equality.discordbot.twitch.game.Game;
-import fr.equality.discordbot.twitch.game.GameNotFoundException;
+import fr.equality.discordbot.exceptions.GameNotFoundException;
 import fr.equality.discordbot.twitch.stream.Stream;
 import fr.equality.discordbot.twitch.stream.StreamManager;
 import io.github.cdimascio.dotenv.Dotenv;
@@ -14,16 +13,9 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
 import javax.security.auth.login.LoginException;
-import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Core {
 
@@ -36,7 +28,6 @@ public class Core {
 
     public static TwitchClient twitchClient;
 
-    public static ArrayList<Stream> streams;
     public static StreamManager streamManager;
 
     public static JDA jdaClient;
@@ -63,7 +54,6 @@ public class Core {
         /* -------------------------------------------------- */
 
         /* ---------- Other Objects Initialization ---------- */
-        streams = new ArrayList<>();
         streamManager = new StreamManager(twitchClient);
 
         jdaGuild = jdaClient.getGuildById(GUILD_ID);
@@ -75,9 +65,9 @@ public class Core {
         jdaClient.addEventListener(new ScheduleCommand());
         /* -------------------------------------------------- */
 
-        streamManager.getStreamsFromSchedule(streams);
+        streamManager.getStreamsFromSchedule();
 
-        for(Stream s : streams) {
+        for(Stream s : streamManager.getStreams()) {
             System.out.println(s.toString());
             System.out.println(" ");
         }

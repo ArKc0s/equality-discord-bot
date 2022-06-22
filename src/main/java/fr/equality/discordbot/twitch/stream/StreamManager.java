@@ -5,7 +5,9 @@ import com.github.twitch4j.helix.domain.ScheduleSegmentInput;
 import com.github.twitch4j.helix.domain.ScheduledSegment;
 import com.github.twitch4j.helix.domain.StreamScheduleResponse;
 import fr.equality.discordbot.Core;
-import fr.equality.discordbot.twitch.game.GameNotFoundException;
+import fr.equality.discordbot.discord.embeds.StreamCreatedEmbed;
+import fr.equality.discordbot.discord.embeds.StreamRemovedEmbed;
+import fr.equality.discordbot.exceptions.GameNotFoundException;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.TextChannel;
 import org.apache.commons.lang.time.DurationFormatUtils;
@@ -19,9 +21,11 @@ import java.util.List;
 public class StreamManager {
 
     private TwitchClient client;
+    private ArrayList<Stream> streams;
 
     public StreamManager(TwitchClient client) {
         this.client = client;
+        this.streams = new ArrayList<>();
     }
 
     public int addStreamToSchedule(Stream stream) {
@@ -35,7 +39,14 @@ public class StreamManager {
         return stream.getId();
     }
 
-    public void getStreamsFromSchedule(ArrayList<Stream> streams) throws ParseException, GameNotFoundException {
+    public void removeStreamFromSchedule(Stream stream) {
+
+        client.getHelix().deleteStreamScheduleSegment(Core.AUTH_TOKEN, Core.CHANNEL_ID, stream.getTwitchID()).execute();
+        streams.remove(stream);
+
+    }
+
+    public void getStreamsFromSchedule() throws ParseException, GameNotFoundException {
 
         List<ScheduledSegment> segments = client.getHelix().getChannelStreamSchedule(Core.AUTH_TOKEN, Core.CHANNEL_ID,
                 null, null, "120", null, 25).execute().getSchedule().getSegments();
@@ -54,31 +65,25 @@ public class StreamManager {
     }
 
     public void announceStreamCreation(Stream stream) {
-
-        String thumbnail = stream.getGame().getThumbnailUrl().replace("{width}", "300")
-                .replace("{height}", "400");
-
-        EmbedBuilder eb = new EmbedBuilder()
-                .setTitle("Nouveau stream planifié !", "https://www.twitch.tv/equalitytv")
-                .setDescription("__Un nouveau stream vient d'être ajouté à la programmation !__")
-                .setColor(new Color(891305))
-                .setFooter("EqualityTV (Made by ArKc0s) | Stream ID : " + stream.getId(),
-                        "https://cdn.discordapp.com/attachments/557966947493478420/988867044021772359/logo5.png")
-                .setThumbnail(thumbnail)
-                .addBlankField(false)
-                .addField("__"+ stream.getTitle() +"__", "sur _" + stream.getGame().getName() +"_",
-                        false)
-                .addBlankField(false)
-                .addField("__Date__", stream.getStartDateAsString(), true)
-                .addField("__Horaire__", stream.getStartingTimeAsString() + "-" +
-                        stream.getEndingTimeAsString(), true)
-                .addBlankField(false)
-                .addField("__Retrouve la programmation ici__", "https://www.twitch.tv/equalitytv/schedule",
-                        false);
-
-        Core.jdaGuild.getChannelById(TextChannel.class, 984391602338410516L).sendMessageEmbeds(eb.build()).queue();
-
+        StreamCreatedEmbed embed = new StreamCreatedEmbed(stream);
+        embed.sendEmbed(984391602338410516L);
     }
 
+    public void announceStreamRemoval(Stream stream) {
+        StreamRemovedEmbed embed = new StreamRemovedEmbed(stream);
+        embed.sendEmbed(984391602338410516L);
+    }
 
+    public ArrayList<Stream> getStreams() {
+        return streams;
+    }
+
+    public Stream getStreamById(int id) throws GameNotFoundException {
+        for(Stream s: streams) {
+            if(s.getId() == id) {
+                return s;
+            }
+        }
+        throw new GameNotFoundException("Stream non-existant ou ID incorrect !");
+    }
 }
