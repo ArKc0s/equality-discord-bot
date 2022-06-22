@@ -2,6 +2,7 @@ package fr.equality.discordbot.commands;
 
 import fr.equality.discordbot.Core;
 import fr.equality.discordbot.exceptions.GameNotFoundException;
+import fr.equality.discordbot.exceptions.StreamNotFoundException;
 import fr.equality.discordbot.twitch.stream.Stream;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -41,8 +42,7 @@ public class ScheduleCommand extends ListenerAdapter {
                         int identifier = Core.streamManager.addStreamToSchedule(stream);
                         Core.streamManager.announceStreamCreation(stream);
 
-                        event.reply("Stream ajouté (ID = " + identifier + ")").queue();
-                        //TODO: Préciser dans le message le titre date et heure du stream
+                        event.reply("**Stream ajouté** : " + stream.getTitle() + " sur " + stream.getGame().getName() + " (ID = **" + identifier + "**)").queue();
 
                         new Thread(new Runnable() {
                             @Override
@@ -58,7 +58,7 @@ public class ScheduleCommand extends ListenerAdapter {
 
                     } catch (GameNotFoundException | ParseException e) {
                         e.printStackTrace();
-                        event.reply("Erreur d'exécution de la commande : " + e.getMessage()).queue();
+                        event.reply("**Erreur d'exécution de la commande : **" + e.getMessage()).queue();
                         //TODO: Handle Helix Errors "HystrixRuntimeException"
                     }
 
@@ -67,7 +67,7 @@ public class ScheduleCommand extends ListenerAdapter {
             } else if(event.getSubcommandName().equals("remove")) {
 
                 if(!event.getMember().getRoles().contains(Core.jdaClient.getRoleById(724609045603811438L))) {
-                    event.reply("Permission non accordée !").queue();
+                    event.reply("**Permission non accordée !**").queue();
                 } else {
 
                     List<OptionMapping> options = event.getOptions();
@@ -80,11 +80,12 @@ public class ScheduleCommand extends ListenerAdapter {
 
                         Stream s = Core.streamManager.getStreamById(ID);
 
-                        Core.streamManager.removeStreamFromSchedule(s);
-                        Core.streamManager.announceStreamRemoval(s);
                         event.reply("OK").queue();
 
-                    } catch (GameNotFoundException e) {
+                        Core.streamManager.removeStreamFromSchedule(s);
+                        Core.streamManager.announceStreamRemoval(s);
+
+                    } catch (StreamNotFoundException e) {
 
                         e.printStackTrace();
                         event.reply("Erreur d'exécution de la commande : " + e.getMessage()).queue();

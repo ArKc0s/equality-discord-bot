@@ -8,6 +8,7 @@ import fr.equality.discordbot.Core;
 import fr.equality.discordbot.discord.embeds.StreamCreatedEmbed;
 import fr.equality.discordbot.discord.embeds.StreamRemovedEmbed;
 import fr.equality.discordbot.exceptions.GameNotFoundException;
+import fr.equality.discordbot.exceptions.StreamNotFoundException;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.TextChannel;
 import org.apache.commons.lang.time.DurationFormatUtils;
@@ -78,12 +79,12 @@ public class StreamManager {
         return streams;
     }
 
-    public Stream getStreamById(int id) throws GameNotFoundException {
+    public Stream getStreamById(int id) throws StreamNotFoundException {
         for(Stream s: streams) {
             if(s.getId() == id) {
                 return s;
             }
         }
-        throw new GameNotFoundException("Stream non-existant ou ID incorrect !");
+        throw new StreamNotFoundException("Stream non-existant ou ID incorrect !");
     }
 }
